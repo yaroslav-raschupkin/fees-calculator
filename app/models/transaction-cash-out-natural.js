@@ -27,7 +27,9 @@ export class TransactionCashOutNatural extends Transaction {
     );
 
     if (currentIndex < 0) {
-      throw new Error(`${this.name}: provided transactions is not in the list`);
+      throw new Error(
+        `${this.constructor.name}: provided transactions is not in the list`,
+      );
     }
 
     const weekAmount = {};
