@@ -1,4 +1,5 @@
 import fs from "fs";
+import { TransactionCashIn } from "../models/transaction-cash-in.js";
 
 /**
  * Class representing a controller for managing transactions.
@@ -16,9 +17,16 @@ export class TransactionsController {
    * @returns {void}
    * @throws Will throw an error if the file cannot be read or JSON parsing fails.
    */
-  loadTransactions(filePath) {
+  async loadTransactions(filePath) {
     const data = fs.readFileSync(filePath, "utf8");
-    this.transactions = JSON.parse(data);
+    const transactions = JSON.parse(data);
+
+    for (const transaction of transactions) {
+      if (transaction.type === "cash_in") {
+        this.transactions.push(await TransactionCashIn.create(transaction));
+      }
+    }
+
     console.log(this.transactions);
   }
 }
