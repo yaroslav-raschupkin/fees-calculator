@@ -4,6 +4,10 @@
   "description": "test task",
   "main": "index.js",
   "type": "module",
+  "engines": {
+    "node": "20.10.0",
+    "npm": "10.2.3"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/yaroslav-raschupkin/fees-calculator/issues"
   },
-  "homepage": "https://github.com/yaroslav-raschupkin/fees-calculator#readme"
+  "homepage": "https://github.com/yaroslav-raschupkin/fees-calculator#readme",
+  "devDependencies": {
+    "prettier": "3.3.3"
+  }
 }
