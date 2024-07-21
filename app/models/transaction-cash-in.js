@@ -21,10 +21,6 @@ export class TransactionCashIn extends Transaction {
     return roundDecimal(Math.min(fee, maxFee));
   }
 
-  /**
-   * Returns the transaction config, if it's not exist - makes an HTTP request for it
-   * @returns {Promise<Object>}
-   */
   static async getConfig() {
     if (!this.config) {
       this.config = await fetchRequest(

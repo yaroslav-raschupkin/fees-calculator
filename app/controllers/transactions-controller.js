@@ -1,6 +1,7 @@
 import fs from "fs";
 import { TransactionCashIn } from "../models/transaction-cash-in.js";
 import { TransactionCashOutJuridical } from "../models/transaction-cash-out-juridical.js";
+import { TransactionCashOutNatural } from "../models/transaction-cash-out-natural.js";
 
 /**
  * Class representing a controller for managing transactions.
@@ -20,6 +21,10 @@ export class TransactionsController {
       } else if (type === "cash_out" && user_type === "juridical") {
         this.transactions.push(
           await TransactionCashOutJuridical.create(transaction),
+        );
+      } else if (type === "cash_out" && user_type === "natural") {
+        this.transactions.push(
+          await TransactionCashOutNatural.create(transaction, transactions),
         );
       }
     }
