@@ -1,6 +1,6 @@
 import { TransactionsController } from "./app/controllers/transactions-controller.js";
 
-function app() {
+async function app() {
   const filePath = process.argv[2];
 
   if (!filePath) {
@@ -8,7 +8,9 @@ function app() {
   }
 
   const transactionsController = new TransactionsController();
-  transactionsController.loadTransactions(filePath);
+  await transactionsController.loadTransactions(filePath);
+  const fees = transactionsController.processTransactions();
+  console.log(fees);
 }
 
 try {

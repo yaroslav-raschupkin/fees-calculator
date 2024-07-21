@@ -11,3 +11,14 @@ export async function fetchRequest(url) {
     console.error(`Something went wrong while fetching ${url}`);
   }
 }
+
+export function calculatePercentage(amount, percentage) {
+  return (amount * percentage) / 100;
+}
+
+export function roundDecimal(number) {
+  const int = Math.floor(number);
+  const dec = number - int;
+  const roundedDecimalPart = Math.ceil(dec * 100) / 100;
+  return int + roundedDecimalPart;
+}

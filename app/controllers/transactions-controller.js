@@ -5,17 +5,10 @@ import { TransactionCashIn } from "../models/transaction-cash-in.js";
  * Class representing a controller for managing transactions.
  */
 export class TransactionsController {
-  /**
-   * Array to hold transaction instances.
-   * @type {Array<Object>}
-   */
   transactions = [];
 
   /**
-   * Load transactions from a JSON file
-   * @param {string} filePath - Path to the JSON file containing transactions.
-   * @returns {void}
-   * @throws Will throw an error if the file cannot be read or JSON parsing fails.
+   * Loads transactions from file and creates transactions instances.
    */
   async loadTransactions(filePath) {
     const data = fs.readFileSync(filePath, "utf8");
@@ -26,7 +19,13 @@ export class TransactionsController {
         this.transactions.push(await TransactionCashIn.create(transaction));
       }
     }
+  }
 
-    console.log(this.transactions);
+  /**
+   * Maps the transactions to calculate each fee.
+   * @returns {[number]} - returns array of transactions fees
+   */
+  processTransactions() {
+    return this.transactions.map((transaction) => transaction.calculateFee());
   }
 }

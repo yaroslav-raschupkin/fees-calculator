@@ -1,5 +1,5 @@
 import { Transaction } from "./transaction.js";
-import { fetchRequest } from "../utils.js";
+import { calculatePercentage, fetchRequest, roundDecimal } from "../utils.js";
 
 /**
  * Class representing a cash-in transaction.
@@ -7,7 +7,18 @@ import { fetchRequest } from "../utils.js";
  */
 export class TransactionCashIn extends Transaction {
   calculateFee() {
-    // Implementation of fee calculation goes here
+    const {
+      max: { amount: maxFee },
+      percents,
+    } = this.config;
+
+    const {
+      operation: { amount },
+    } = this.transaction;
+
+    const fee = calculatePercentage(amount, percents);
+
+    return roundDecimal(Math.min(fee, maxFee));
   }
 
   /**
@@ -25,7 +36,17 @@ export class TransactionCashIn extends Transaction {
   }
 
   static async create(transaction) {
+    this.validate(transaction);
     const config = await this.getConfig();
+
     return new TransactionCashIn(transaction, config);
+  }
+
+  static validate(transaction) {
+    const { type } = transaction;
+
+    if (type !== "cash_in") {
+      throw new Error(`${this.name}: provided type '${type}' is not valid.`);
+    }
   }
 }
