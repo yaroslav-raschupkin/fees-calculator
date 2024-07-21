@@ -1,9 +1,14 @@
-function app() {
-  const fileName = process.argv[2];
+import { TransactionsController } from "./app/controllers/transactions-controller.js";
 
-  if (!fileName) {
+function app() {
+  const filePath = process.argv[2];
+
+  if (!filePath) {
     throw new Error("Path to transactions file was not provided");
   }
+
+  const transactionsController = new TransactionsController();
+  transactionsController.loadTransactions(filePath);
 }
 
 try {
