@@ -1,4 +1,5 @@
 import { TransactionsController } from "./app/controllers/transactions-controller.js";
+import { TransactionConfig } from "./app/models/transaction-config.js";
 
 try {
   (async function app() {
@@ -8,7 +9,10 @@ try {
       throw new Error("Path to transactions file was not provided");
     }
 
-    const transactionsController = new TransactionsController();
+    const transactionConfig = new TransactionConfig();
+    const transactionsController = new TransactionsController(
+      transactionConfig,
+    );
     await transactionsController.loadTransactions(filePath);
     const fees = transactionsController.processTransactions();
     console.log(fees.map((fee) => fee.toFixed(2)).join("\n"));

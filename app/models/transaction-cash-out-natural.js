@@ -5,7 +5,6 @@ import {
   roundDecimal,
 } from "../utils.js";
 import { TRANSACTION_TYPE, USER_TYPE } from "../constants.js";
-import { getNaturalCashOutConfig } from "../api/cash-out.js";
 
 /**
  * Class representing a natural cash-out transaction.
@@ -75,31 +74,18 @@ export class TransactionCashOutNatural extends Transaction {
     }
   }
 
-  static async getConfig() {
-    if (!this.config) {
-      this.config = await getNaturalCashOutConfig();
-    }
-
-    return this.config;
-  }
-
-  static async create(transaction, transactions) {
-    this.validate(transaction);
-    const config = await this.getConfig();
-
-    return new TransactionCashOutNatural(transaction, config, transactions);
-  }
-
-  static validate(transaction) {
+  validate(transaction) {
     const { type, user_type } = transaction;
 
     if (type !== TRANSACTION_TYPE.CASH_OUT) {
-      throw new Error(`${this.name}: provided type '${type}' is not valid.`);
+      throw new Error(
+        `${this.constructor.name}: provided type '${type}' is not valid.`,
+      );
     }
 
     if (user_type !== USER_TYPE.NATURAL) {
       throw new Error(
-        `${this.name}: provided user type '${user_type}' is not valid.`,
+        `${this.constructor.name}: provided user type '${user_type}' is not valid.`,
       );
     }
   }

@@ -5,18 +5,12 @@ import {
   roundDecimal,
 } from "../utils.js";
 import { TRANSACTION_TYPE, USER_TYPE } from "../constants.js";
-import { getNaturalCashOutConfig } from "../api/cash-out.js";
 
 // Mocking utility functions
 jest.mock("../utils.js", () => ({
   calculatePercentage: jest.fn(),
   getISOWeekNumber: jest.fn(),
   roundDecimal: jest.fn(),
-}));
-
-// Mocking API calls
-jest.mock("../api/cash-out.js", () => ({
-  getNaturalCashOutConfig: jest.fn(),
 }));
 
 describe("TransactionCashOutNatural", () => {
@@ -95,69 +89,6 @@ describe("TransactionCashOutNatural", () => {
     });
   });
 
-  describe("getConfig", () => {
-    it("should fetch and return the config", async () => {
-      getNaturalCashOutConfig.mockResolvedValue(mockConfig);
-      TransactionCashOutNatural.config = null;
-
-      const config = await TransactionCashOutNatural.getConfig();
-      expect(config).toEqual(mockConfig);
-    });
-
-    it("should return cached config if already fetched", async () => {
-      TransactionCashOutNatural.config = mockConfig;
-
-      const config = await TransactionCashOutNatural.getConfig();
-
-      expect(getNaturalCashOutConfig).not.toHaveBeenCalled();
-      expect(config).toEqual(mockConfig);
-    });
-  });
-
-  describe("create", () => {
-    it("should create a TransactionCashOutNatural instance", async () => {
-      getNaturalCashOutConfig.mockResolvedValue(mockConfig);
-
-      const transactionCashOutNatural = await TransactionCashOutNatural.create(
-        mockTransaction,
-        mockTransactions,
-      );
-
-      expect(transactionCashOutNatural).toBeInstanceOf(
-        TransactionCashOutNatural,
-      );
-      expect(transactionCashOutNatural.transaction).toEqual(mockTransaction);
-      expect(transactionCashOutNatural.config).toEqual(mockConfig);
-      expect(transactionCashOutNatural.transactions).toEqual(mockTransactions);
-    });
-
-    it("should throw an error for invalid transaction type", async () => {
-      const invalidTransaction = {
-        ...mockTransaction,
-        type: TRANSACTION_TYPE.CASH_IN,
-      };
-
-      await expect(
-        TransactionCashOutNatural.create(invalidTransaction, mockTransactions),
-      ).rejects.toThrow(
-        "TransactionCashOutNatural: provided type 'cash_in' is not valid.",
-      );
-    });
-
-    it("should throw an error for invalid user type", async () => {
-      const invalidTransaction = {
-        ...mockTransaction,
-        user_type: USER_TYPE.JURIDICAL,
-      };
-
-      await expect(
-        TransactionCashOutNatural.create(invalidTransaction, mockTransactions),
-      ).rejects.toThrow(
-        "TransactionCashOutNatural: provided user type 'juridical' is not valid.",
-      );
-    });
-  });
-
   describe("validate", () => {
     it("should throw an error for invalid transaction type", () => {
       const invalidTransaction = {
@@ -165,8 +96,8 @@ describe("TransactionCashOutNatural", () => {
         user_type: USER_TYPE.NATURAL,
       };
 
-      expect(() =>
-        TransactionCashOutNatural.validate(invalidTransaction),
+      expect(
+        () => new TransactionCashOutNatural(invalidTransaction, mockConfig),
       ).toThrow(
         "TransactionCashOutNatural: provided type 'cash_in' is not valid.",
       );
@@ -178,16 +109,16 @@ describe("TransactionCashOutNatural", () => {
         user_type: USER_TYPE.JURIDICAL,
       };
 
-      expect(() =>
-        TransactionCashOutNatural.validate(invalidTransaction),
+      expect(
+        () => new TransactionCashOutNatural(invalidTransaction, mockConfig),
       ).toThrow(
         "TransactionCashOutNatural: provided user type 'juridical' is not valid.",
       );
     });
 
     it("should not throw an error for valid transaction", () => {
-      expect(() =>
-        TransactionCashOutNatural.validate(mockTransaction),
+      expect(
+        () => new TransactionCashOutNatural(mockTransaction, mockConfig),
       ).not.toThrow();
     });
   });

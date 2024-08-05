@@ -12,6 +12,18 @@ jest.mock("../models/transaction-cash-out-juridical.js");
 jest.mock("../models/transaction-cash-out-natural.js");
 
 describe("TransactionsController", () => {
+  const transactionConfigMock = {
+    getCashInConfig: jest
+      .fn()
+      .mockResolvedValue({ max: { amount: 5 }, percents: 0.03 }),
+    getJuridicalCashOutConfig: jest
+      .fn()
+      .mockResolvedValue({ percents: 0.3, min: { amount: 0.5 } }),
+    getNaturalCashOutConfig: jest
+      .fn()
+      .mockResolvedValue({ percents: 0.3, week_limit: { amount: 1000 } }),
+  };
+
   const mockTransactions = [
     { type: TRANSACTION_TYPE.CASH_IN, operation: { amount: 200 } },
     {
@@ -34,37 +46,36 @@ describe("TransactionsController", () => {
     it("should load transactions from the file and create instances", async () => {
       fs.readFileSync.mockReturnValue(JSON.stringify(mockTransactions));
 
-      const transactionCashInInstance = { calculateFee: jest.fn() };
-      const transactionCashOutJuridicalInstance = { calculateFee: jest.fn() };
-      const transactionCashOutNaturalInstance = { calculateFee: jest.fn() };
-
-      TransactionCashIn.create.mockResolvedValue(transactionCashInInstance);
-      TransactionCashOutJuridical.create.mockResolvedValue(
-        transactionCashOutJuridicalInstance,
+      const transactionsController = new TransactionsController(
+        transactionConfigMock,
       );
-      TransactionCashOutNatural.create.mockResolvedValue(
-        transactionCashOutNaturalInstance,
+      await transactionsController.loadTransactions(
+        "path/to/transactions.json",
       );
 
-      const controller = new TransactionsController();
-      await controller.loadTransactions("path/to/file");
-
-      expect(fs.readFileSync).toHaveBeenCalledWith("path/to/file", "utf8");
-      expect(TransactionCashIn.create).toHaveBeenCalledWith(
-        mockTransactions[0],
+      expect(fs.readFileSync).toHaveBeenCalledWith(
+        "path/to/transactions.json",
+        "utf8",
       );
-      expect(TransactionCashOutJuridical.create).toHaveBeenCalledWith(
+      expect(transactionConfigMock.getCashInConfig).toHaveBeenCalled();
+      expect(
+        transactionConfigMock.getJuridicalCashOutConfig,
+      ).toHaveBeenCalled();
+      expect(transactionConfigMock.getNaturalCashOutConfig).toHaveBeenCalled();
+
+      expect(TransactionCashIn).toHaveBeenCalledWith(mockTransactions[0], {
+        max: { amount: 5 },
+        percents: 0.03,
+      });
+      expect(TransactionCashOutJuridical).toHaveBeenCalledWith(
         mockTransactions[1],
+        { percents: 0.3, min: { amount: 0.5 } },
       );
-      expect(TransactionCashOutNatural.create).toHaveBeenCalledWith(
+      expect(TransactionCashOutNatural).toHaveBeenCalledWith(
         mockTransactions[2],
+        { percents: 0.3, week_limit: { amount: 1000 } },
         mockTransactions,
       );
-      expect(controller.transactions).toEqual([
-        transactionCashInInstance,
-        transactionCashOutJuridicalInstance,
-        transactionCashOutNaturalInstance,
-      ]);
     });
   });
 
@@ -80,7 +91,7 @@ describe("TransactionsController", () => {
         calculateFee: jest.fn().mockReturnValue(3),
       };
 
-      const controller = new TransactionsController();
+      const controller = new TransactionsController(transactionConfigMock);
       controller.transactions = [
         transactionCashInInstance,
         transactionCashOutJuridicalInstance,

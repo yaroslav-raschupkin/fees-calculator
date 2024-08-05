@@ -9,6 +9,9 @@ import { TRANSACTION_TYPE, USER_TYPE } from "../constants.js";
  */
 export class TransactionsController {
   transactions = [];
+  constructor(transactionConfig) {
+    this.transactionConfig = transactionConfig;
+  }
 
   async loadTransactions(filePath) {
     const data = fs.readFileSync(filePath, "utf8");
@@ -18,20 +21,32 @@ export class TransactionsController {
       const { type, user_type } = transaction;
 
       if (type === TRANSACTION_TYPE.CASH_IN) {
-        this.transactions.push(await TransactionCashIn.create(transaction));
+        this.transactions.push(
+          new TransactionCashIn(
+            transaction,
+            await this.transactionConfig.getCashInConfig(),
+          ),
+        );
       } else if (
         type === TRANSACTION_TYPE.CASH_OUT &&
         user_type === USER_TYPE.JURIDICAL
       ) {
         this.transactions.push(
-          await TransactionCashOutJuridical.create(transaction),
+          new TransactionCashOutJuridical(
+            transaction,
+            await this.transactionConfig.getJuridicalCashOutConfig(),
+          ),
         );
       } else if (
         type === TRANSACTION_TYPE.CASH_OUT &&
         user_type === USER_TYPE.NATURAL
       ) {
         this.transactions.push(
-          await TransactionCashOutNatural.create(transaction, transactions),
+          new TransactionCashOutNatural(
+            transaction,
+            await this.transactionConfig.getNaturalCashOutConfig(),
+            transactions,
+          ),
         );
       }
     }
