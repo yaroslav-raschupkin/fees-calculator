@@ -1,6 +1,7 @@
 import { Transaction } from "./transaction.js";
-import { calculatePercentage, fetchRequest, roundDecimal } from "../utils.js";
+import { calculatePercentage, roundDecimal } from "../utils.js";
 import { TRANSACTION_TYPE } from "../constants.js";
+import { getCashInConfig } from "../api/cash-in.js";
 
 /**
  * Class representing a cash-in transaction.
@@ -24,9 +25,7 @@ export class TransactionCashIn extends Transaction {
 
   static async getConfig() {
     if (!this.config) {
-      this.config = await fetchRequest(
-        "https://developers.paysera.com/tasks/api/cash-in",
-      );
+      this.config = await getCashInConfig();
     }
 
     return this.config;

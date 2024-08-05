@@ -1,12 +1,17 @@
 import { TransactionCashIn } from "./transaction-cash-in.js";
-import { calculatePercentage, fetchRequest, roundDecimal } from "../utils.js";
+import { calculatePercentage, roundDecimal } from "../utils.js";
 import { TRANSACTION_TYPE } from "../constants.js";
+import { getCashInConfig } from "../api/cash-in.js";
 
 // Mocking utility functions
 jest.mock("../utils.js", () => ({
   calculatePercentage: jest.fn(),
-  fetchRequest: jest.fn(),
   roundDecimal: jest.fn(),
+}));
+
+// Mocking API calls
+jest.mock("../api/cash-in.js", () => ({
+  getCashInConfig: jest.fn(),
 }));
 
 describe("TransactionCashIn", () => {
@@ -58,7 +63,7 @@ describe("TransactionCashIn", () => {
 
   describe("getConfig", () => {
     it("should fetch and return the config", async () => {
-      fetchRequest.mockResolvedValue(mockConfig);
+      getCashInConfig.mockResolvedValue(mockConfig);
       TransactionCashIn.config = null;
       const config = await TransactionCashIn.getConfig();
       expect(config).toEqual(mockConfig);
@@ -69,14 +74,14 @@ describe("TransactionCashIn", () => {
 
       const config = await TransactionCashIn.getConfig();
 
-      expect(fetchRequest).not.toHaveBeenCalled();
+      expect(getCashInConfig).not.toHaveBeenCalled();
       expect(config).toEqual(mockConfig);
     });
   });
 
   describe("create", () => {
     it("should create a TransactionCashIn instance", async () => {
-      fetchRequest.mockResolvedValue(mockConfig);
+      getCashInConfig.mockResolvedValue(mockConfig);
       const transactionCashIn = await TransactionCashIn.create(mockTransaction);
       expect(transactionCashIn).toBeInstanceOf(TransactionCashIn);
       expect(transactionCashIn.transaction).toEqual(mockTransaction);

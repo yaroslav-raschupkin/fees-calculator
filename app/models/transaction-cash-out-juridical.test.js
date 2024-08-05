@@ -1,12 +1,17 @@
 import { TransactionCashOutJuridical } from "./transaction-cash-out-juridical.js";
-import { calculatePercentage, fetchRequest, roundDecimal } from "../utils.js";
+import { calculatePercentage, roundDecimal } from "../utils.js";
 import { TRANSACTION_TYPE, USER_TYPE } from "../constants.js";
+import { getJuridicalCashOutConfig } from "../api/cash-out.js";
 
 // Mocking utility functions
 jest.mock("../utils.js", () => ({
   calculatePercentage: jest.fn(),
-  fetchRequest: jest.fn(),
   roundDecimal: jest.fn(),
+}));
+
+// Mocking API calls
+jest.mock("../api/cash-out.js", () => ({
+  getJuridicalCashOutConfig: jest.fn(),
 }));
 
 describe("TransactionCashOutJuridical", () => {
@@ -62,7 +67,7 @@ describe("TransactionCashOutJuridical", () => {
 
   describe("getConfig", () => {
     it("should fetch and return the config", async () => {
-      fetchRequest.mockResolvedValue(mockConfig);
+      getJuridicalCashOutConfig.mockResolvedValue(mockConfig);
       TransactionCashOutJuridical.config = null;
 
       const config = await TransactionCashOutJuridical.getConfig();
@@ -74,14 +79,14 @@ describe("TransactionCashOutJuridical", () => {
 
       const config = await TransactionCashOutJuridical.getConfig();
 
-      expect(fetchRequest).not.toHaveBeenCalled();
+      expect(getJuridicalCashOutConfig).not.toHaveBeenCalled();
       expect(config).toEqual(mockConfig);
     });
   });
 
   describe("create", () => {
     it("should create a TransactionCashOutJuridical instance", async () => {
-      fetchRequest.mockResolvedValue(mockConfig);
+      getJuridicalCashOutConfig.mockResolvedValue(mockConfig);
 
       const transactionCashOutJuridical =
         await TransactionCashOutJuridical.create(mockTransaction);

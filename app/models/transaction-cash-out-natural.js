@@ -1,11 +1,11 @@
 import { Transaction } from "./transaction.js";
 import {
   calculatePercentage,
-  fetchRequest,
   getISOWeekNumber,
   roundDecimal,
 } from "../utils.js";
 import { TRANSACTION_TYPE, USER_TYPE } from "../constants.js";
+import { getNaturalCashOutConfig } from "../api/cash-out.js";
 
 /**
  * Class representing a natural cash-out transaction.
@@ -77,9 +77,7 @@ export class TransactionCashOutNatural extends Transaction {
 
   static async getConfig() {
     if (!this.config) {
-      this.config = await fetchRequest(
-        "https://developers.paysera.com/tasks/api/cash-out-natural",
-      );
+      this.config = await getNaturalCashOutConfig();
     }
 
     return this.config;

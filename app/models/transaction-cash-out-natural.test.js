@@ -1,18 +1,22 @@
 import { TransactionCashOutNatural } from "./transaction-cash-out-natural.js";
 import {
   calculatePercentage,
-  fetchRequest,
   getISOWeekNumber,
   roundDecimal,
 } from "../utils.js";
 import { TRANSACTION_TYPE, USER_TYPE } from "../constants.js";
+import { getNaturalCashOutConfig } from "../api/cash-out.js";
 
 // Mocking utility functions
 jest.mock("../utils.js", () => ({
   calculatePercentage: jest.fn(),
-  fetchRequest: jest.fn(),
   getISOWeekNumber: jest.fn(),
   roundDecimal: jest.fn(),
+}));
+
+// Mocking API calls
+jest.mock("../api/cash-out.js", () => ({
+  getNaturalCashOutConfig: jest.fn(),
 }));
 
 describe("TransactionCashOutNatural", () => {
@@ -93,7 +97,7 @@ describe("TransactionCashOutNatural", () => {
 
   describe("getConfig", () => {
     it("should fetch and return the config", async () => {
-      fetchRequest.mockResolvedValue(mockConfig);
+      getNaturalCashOutConfig.mockResolvedValue(mockConfig);
       TransactionCashOutNatural.config = null;
 
       const config = await TransactionCashOutNatural.getConfig();
@@ -105,14 +109,14 @@ describe("TransactionCashOutNatural", () => {
 
       const config = await TransactionCashOutNatural.getConfig();
 
-      expect(fetchRequest).not.toHaveBeenCalled();
+      expect(getNaturalCashOutConfig).not.toHaveBeenCalled();
       expect(config).toEqual(mockConfig);
     });
   });
 
   describe("create", () => {
     it("should create a TransactionCashOutNatural instance", async () => {
-      fetchRequest.mockResolvedValue(mockConfig);
+      getNaturalCashOutConfig.mockResolvedValue(mockConfig);
 
       const transactionCashOutNatural = await TransactionCashOutNatural.create(
         mockTransaction,

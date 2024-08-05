@@ -1,6 +1,7 @@
 import { Transaction } from "./transaction.js";
-import { calculatePercentage, fetchRequest, roundDecimal } from "../utils.js";
+import { calculatePercentage, roundDecimal } from "../utils.js";
 import { TRANSACTION_TYPE, USER_TYPE } from "../constants.js";
+import { getJuridicalCashOutConfig } from "../api/cash-out.js";
 
 /**
  * Class representing a juridical cash-out transaction.
@@ -24,9 +25,7 @@ export class TransactionCashOutJuridical extends Transaction {
 
   static async getConfig() {
     if (!this.config) {
-      this.config = await fetchRequest(
-        "https://developers.paysera.com/tasks/api/cash-out-juridical",
-      );
+      this.config = await getJuridicalCashOutConfig();
     }
 
     return this.config;
