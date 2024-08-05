@@ -1,5 +1,6 @@
 import { TransactionCashIn } from "./transaction-cash-in.js";
 import { calculatePercentage, fetchRequest, roundDecimal } from "../utils.js";
+import { TRANSACTION_TYPE } from "../constants.js";
 
 // Mocking utility functions
 jest.mock("../utils.js", () => ({
@@ -10,7 +11,7 @@ jest.mock("../utils.js", () => ({
 
 describe("TransactionCashIn", () => {
   const mockTransaction = {
-    type: "cash_in",
+    type: TRANSACTION_TYPE.CASH_IN,
     operation: { amount: 1000 },
   };
 
@@ -83,7 +84,10 @@ describe("TransactionCashIn", () => {
     });
 
     it("should throw an error for invalid transaction type", async () => {
-      const invalidTransaction = { ...mockTransaction, type: "cash_out" };
+      const invalidTransaction = {
+        ...mockTransaction,
+        type: TRANSACTION_TYPE.CASH_OUT,
+      };
 
       await expect(
         TransactionCashIn.create(invalidTransaction),
@@ -95,7 +99,7 @@ describe("TransactionCashIn", () => {
 
   describe("validate", () => {
     it("should throw an error for invalid transaction type", () => {
-      const invalidTransaction = { type: "cash_out" };
+      const invalidTransaction = { type: TRANSACTION_TYPE.CASH_OUT };
 
       expect(() => TransactionCashIn.validate(invalidTransaction)).toThrow(
         "TransactionCashIn: provided type 'cash_out' is not valid.",

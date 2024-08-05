@@ -1,5 +1,6 @@
 import { Transaction } from "./transaction.js";
 import { calculatePercentage, fetchRequest, roundDecimal } from "../utils.js";
+import { TRANSACTION_TYPE } from "../constants.js";
 
 /**
  * Class representing a cash-in transaction.
@@ -41,7 +42,7 @@ export class TransactionCashIn extends Transaction {
   static validate(transaction) {
     const { type } = transaction;
 
-    if (type !== "cash_in") {
+    if (type !== TRANSACTION_TYPE.CASH_IN) {
       throw new Error(`${this.name}: provided type '${type}' is not valid.`);
     }
   }

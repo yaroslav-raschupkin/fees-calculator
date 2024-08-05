@@ -2,6 +2,7 @@ import fs from "fs";
 import { TransactionCashIn } from "../models/transaction-cash-in.js";
 import { TransactionCashOutJuridical } from "../models/transaction-cash-out-juridical.js";
 import { TransactionCashOutNatural } from "../models/transaction-cash-out-natural.js";
+import { TRANSACTION_TYPE, USER_TYPE } from "../constants.js";
 
 /**
  * Class representing a controller for managing transactions.
@@ -16,13 +17,19 @@ export class TransactionsController {
     for (const transaction of transactions) {
       const { type, user_type } = transaction;
 
-      if (type === "cash_in") {
+      if (type === TRANSACTION_TYPE.CASH_IN) {
         this.transactions.push(await TransactionCashIn.create(transaction));
-      } else if (type === "cash_out" && user_type === "juridical") {
+      } else if (
+        type === TRANSACTION_TYPE.CASH_OUT &&
+        user_type === USER_TYPE.JURIDICAL
+      ) {
         this.transactions.push(
           await TransactionCashOutJuridical.create(transaction),
         );
-      } else if (type === "cash_out" && user_type === "natural") {
+      } else if (
+        type === TRANSACTION_TYPE.CASH_OUT &&
+        user_type === USER_TYPE.NATURAL
+      ) {
         this.transactions.push(
           await TransactionCashOutNatural.create(transaction, transactions),
         );

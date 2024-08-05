@@ -1,5 +1,6 @@
 import { TransactionCashOutJuridical } from "./transaction-cash-out-juridical.js";
 import { calculatePercentage, fetchRequest, roundDecimal } from "../utils.js";
+import { TRANSACTION_TYPE, USER_TYPE } from "../constants.js";
 
 // Mocking utility functions
 jest.mock("../utils.js", () => ({
@@ -10,8 +11,8 @@ jest.mock("../utils.js", () => ({
 
 describe("TransactionCashOutJuridical", () => {
   const mockTransaction = {
-    type: "cash_out",
-    user_type: "juridical",
+    type: TRANSACTION_TYPE.CASH_OUT,
+    user_type: USER_TYPE.JURIDICAL,
     operation: { amount: 1000 },
   };
 
@@ -92,7 +93,10 @@ describe("TransactionCashOutJuridical", () => {
     });
 
     it("should throw an error for invalid transaction type", async () => {
-      const invalidTransaction = { ...mockTransaction, type: "cash_in" };
+      const invalidTransaction = {
+        ...mockTransaction,
+        type: TRANSACTION_TYPE.CASH_IN,
+      };
 
       await expect(
         TransactionCashOutJuridical.create(invalidTransaction),
@@ -102,7 +106,10 @@ describe("TransactionCashOutJuridical", () => {
     });
 
     it("should throw an error for invalid user type", async () => {
-      const invalidTransaction = { ...mockTransaction, user_type: "natural" };
+      const invalidTransaction = {
+        ...mockTransaction,
+        user_type: USER_TYPE.NATURAL,
+      };
 
       await expect(
         TransactionCashOutJuridical.create(invalidTransaction),
@@ -114,7 +121,10 @@ describe("TransactionCashOutJuridical", () => {
 
   describe("validate", () => {
     it("should throw an error for invalid transaction type", () => {
-      const invalidTransaction = { type: "cash_in", user_type: "juridical" };
+      const invalidTransaction = {
+        type: TRANSACTION_TYPE.CASH_IN,
+        user_type: USER_TYPE.JURIDICAL,
+      };
 
       expect(() =>
         TransactionCashOutJuridical.validate(invalidTransaction),
@@ -124,7 +134,10 @@ describe("TransactionCashOutJuridical", () => {
     });
 
     it("should throw an error for invalid user type", () => {
-      const invalidTransaction = { type: "cash_out", user_type: "natural" };
+      const invalidTransaction = {
+        type: TRANSACTION_TYPE.CASH_OUT,
+        user_type: USER_TYPE.NATURAL,
+      };
 
       expect(() =>
         TransactionCashOutJuridical.validate(invalidTransaction),

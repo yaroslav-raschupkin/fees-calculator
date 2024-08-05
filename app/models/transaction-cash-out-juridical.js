@@ -1,5 +1,6 @@
 import { Transaction } from "./transaction.js";
 import { calculatePercentage, fetchRequest, roundDecimal } from "../utils.js";
+import { TRANSACTION_TYPE, USER_TYPE } from "../constants.js";
 
 /**
  * Class representing a juridical cash-out transaction.
@@ -41,11 +42,11 @@ export class TransactionCashOutJuridical extends Transaction {
   static validate(transaction) {
     const { type, user_type } = transaction;
 
-    if (type !== "cash_out") {
+    if (type !== TRANSACTION_TYPE.CASH_OUT) {
       throw new Error(`${this.name}: provided type '${type}' is not valid.`);
     }
 
-    if (user_type !== "juridical") {
+    if (user_type !== USER_TYPE.JURIDICAL) {
       throw new Error(
         `${this.name}: provided user type '${user_type}' is not valid.`,
       );

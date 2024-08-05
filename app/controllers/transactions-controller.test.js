@@ -3,6 +3,7 @@ import { TransactionsController } from "./transactions-controller.js";
 import { TransactionCashIn } from "../models/transaction-cash-in.js";
 import { TransactionCashOutJuridical } from "../models/transaction-cash-out-juridical.js";
 import { TransactionCashOutNatural } from "../models/transaction-cash-out-natural.js";
+import { TRANSACTION_TYPE, USER_TYPE } from "../constants.js";
 
 // Mocking the modules
 jest.mock("fs");
@@ -12,9 +13,17 @@ jest.mock("../models/transaction-cash-out-natural.js");
 
 describe("TransactionsController", () => {
   const mockTransactions = [
-    { type: "cash_in", operation: { amount: 200 } },
-    { type: "cash_out", user_type: "juridical", operation: { amount: 300 } },
-    { type: "cash_out", user_type: "natural", operation: { amount: 400 } },
+    { type: TRANSACTION_TYPE.CASH_IN, operation: { amount: 200 } },
+    {
+      type: TRANSACTION_TYPE.CASH_OUT,
+      user_type: USER_TYPE.JURIDICAL,
+      operation: { amount: 300 },
+    },
+    {
+      type: TRANSACTION_TYPE.CASH_OUT,
+      user_type: USER_TYPE.NATURAL,
+      operation: { amount: 400 },
+    },
   ];
 
   beforeEach(() => {

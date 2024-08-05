@@ -5,6 +5,7 @@ import {
   getISOWeekNumber,
   roundDecimal,
 } from "../utils.js";
+import { TRANSACTION_TYPE, USER_TYPE } from "../constants.js";
 
 /**
  * Class representing a natural cash-out transaction.
@@ -44,7 +45,10 @@ export class TransactionCashOutNatural extends Transaction {
         operation: { amount },
       } = transaction;
 
-      if (type === "cash_in" || user_type === "juridical") {
+      if (
+        type === TRANSACTION_TYPE.CASH_IN ||
+        user_type === USER_TYPE.JURIDICAL
+      ) {
         continue;
       }
 
@@ -91,11 +95,11 @@ export class TransactionCashOutNatural extends Transaction {
   static validate(transaction) {
     const { type, user_type } = transaction;
 
-    if (type !== "cash_out") {
+    if (type !== TRANSACTION_TYPE.CASH_OUT) {
       throw new Error(`${this.name}: provided type '${type}' is not valid.`);
     }
 
-    if (user_type !== "natural") {
+    if (user_type !== USER_TYPE.NATURAL) {
       throw new Error(
         `${this.name}: provided user type '${user_type}' is not valid.`,
       );
